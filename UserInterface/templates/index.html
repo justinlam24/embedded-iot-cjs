@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skateboard Tracker</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Skateboard Movement Tracker</h1>
+    </header>
+    
+    <section id="skateboard-view">
+        <h2>3D Skateboard Visualization</h2>
+        <h3 id="trick-name">Waiting for Trick...</h3>
+        <div id="skateboard-container"></div>
+    </section>
+    
+    
+    <section id="statistics">
+        <h2>Performance Statistics</h2>
+        <ul id="stats-list">
+            <li>Tricks Performed: <span id="tricks-count">0</span></li>
+            <li>Accuracy: <span id="accuracy">0%</span></li>
+            <li>Session Time: <span id="session-time">0:00</span></li>
+        </ul>
+    </section>
+    
+    <section id="project-info">
+        <h2>Project Overview</h2>
+        <p>This project tracks skateboard movements using a Raspberry Pi and visualizes them in real-time.</p>
+    </section>
+    
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
