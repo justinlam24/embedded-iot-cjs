@@ -1,0 +1,48 @@
+import { initializeApp } from "firebase/app";
+import { getDatabase, ref, onValue } from "firebase/database";
+
+// Firebase Config (Replace with your actual credentials)
+const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "candjs-bb4db.firebaseapp.com",
+    databaseURL: "https://candjs-bb4db-default-rtdb.europe-west1.firebasedatabase.app/",
+    projectId: "candjs-bb4db",
+    storageBucket: "candjs-bb4db.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const trickRef = ref(db, "tricks"); // Listen to the "tricks" node in Firebase
+
+onValue(trickRef, (snapshot) => {
+    if (snapshot.exists()) {
+        const data = snapshot.val();
+        const latestKey = Object.keys(data).pop(); // Get the latest trick
+        const trickData = data[latestKey];
+
+        console.log("New Trick Data:", trickData);
+        handleTrick(trickData);
+    }
+});
+
+// Function to handle trick animation
+function handleTrick(data) {
+    document.getElementById('trick-name').innerText = "Performing: " + data.trick_name;
+    
+    // Add new trick to the queue
+    trickQueue.push({
+        name: data.trick_name,
+        rotation_x: data.rotation_x,
+        rotation_y: data.rotation_y,
+        rotation_z: data.rotation_z
+    });
+
+    // If no animation is in progress, start immediately
+    if (!isAnimating) {
+        executeNextTrick();
+    }
+}
