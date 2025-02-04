@@ -12,6 +12,11 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 def index():
     return render_template('index.html')
 
+def readfromFirebase():
+    # Code to read data from Firebase
+    return data
+
+
 # Define skateboard tricks with rotation sequences
 SKATEBOARD_TRICKS = [
     {"name": "Kickflip", "rotation_x": 2.0, "rotation_y": 0.0, "rotation_z": 0.5},   # Fast X-axis flip
