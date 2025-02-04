@@ -19,7 +19,8 @@ credentials = service_account.Credentials.from_service_account_file(keyfile, sco
 # Use the credentials object to authenticate a Requests session.
 authed_session = AuthorizedSession(credentials)
 
-N = 10
+N = 20
+n = 1
 def write_and_limit_data(data):
     path = "postlist.json"
 
@@ -50,6 +51,17 @@ def write_and_limit_data(data):
     else:
         print(f"Failed to fetch records: {fetch_response.text}")
 
-data = {"n":n, "time":time.time(), "rnd":random.random()}
-write_and_limit_data(data)
-time.sleep(1)
+skateboard_tricks = {
+    1:"Kickflip",
+    2: "Heelflip",
+    3: "Shuv It",
+    4: "Front Shuv",
+    5: "360 Shuv It",
+    6: "360 Shuv",
+    7: "Ollie"
+}
+
+for n in range(7, 0, -1):
+    data = {"trick name": skateboard_tricks[n], "max height": random.random(), "max velocity": random.random(), "time": time.time()}
+    write_and_limit_data(data)
+    time.sleep(1)
