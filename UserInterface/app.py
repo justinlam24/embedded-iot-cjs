@@ -1,58 +1,120 @@
 import eventlet
 eventlet.monkey_patch()
 
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from flask_socketio import SocketIO
 import random
+import requests, time
 
 app = Flask(__name__)
+app.secret_key = "supersecretkey"  # For session management
 socketio = SocketIO(app, cors_allowed_origins="*")
 
+FIREBASE_DB = "https://candjs-bb4db-default-rtdb.europe-west1.firebasedatabase.app/"
+USER_DATA_PATH = "users.json"
+TRICK_HISTORY_PATH = "postlist.json"
+
+VALID_TRICKS = {
+    "Kickflip": "kickflip.gif",
+    "Heelflip": "heelflip.gif",
+    "Shuv it": "shuvit.gif",
+    "Front shuv": "frontshuv.gif",
+    "360 shuv it": "360shuvit.gif",
+    "360 shuv": "360shuv.gif",
+    "Ollie": "ollie.gif"
+}
+
+# ---- ROUTES ----
+
 @app.route('/')
-def index():
-    return render_template('index.html')
+def home():
+    if "username" in session:
+        return redirect(url_for('dashboard'))
+    return redirect(url_for('login'))
 
-def readfromFirebase():
-    # Code to read data from Firebase
-    return data
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == "POST":
+        username = request.form['username']
+        password = request.form['password']
 
+        # Fetch user data from Firebase
+        # response = requests.get(FIREBASE_DB + USER_DATA_PATH)
+        # if response.ok:
+        #     users = response.json()
+        #     if username in users and users[username]["password"] == password:
+        #         session["username"] = username
+        #         return redirect(url_for("dashboard"))
+        # Make up a fake user for now
+        if username == "admin" and password == "admin":
+            session["username"] = username
+            return redirect(url_for("dashboard"))
+        
+        return render_template("login.html", error="Invalid username or password.")
+    
+    return render_template("login.html")
 
-# Define skateboard tricks with rotation sequences
-SKATEBOARD_TRICKS = [
-    {"name": "Kickflip", "rotation_x": 2.0, "rotation_y": 0.0, "rotation_z": 0.5},   # Fast X-axis flip
-    {"name": "Heelflip", "rotation_x": -2.0, "rotation_y": 0.0, "rotation_z": 0.5},  # Fast X-axis flip in opposite direction
-    {"name": "Ollie", "rotation_x": 0.5, "rotation_y": 1.0, "rotation_z": 0.0},      # Small X flip, more Y-axis height
-    {"name": "Pop Shove-it", "rotation_x": 0.0, "rotation_y": 0.0, "rotation_z": 3.0},  # Z-axis spin (shove-it effect)
-    {"name": "Frontside 180", "rotation_x": 0.0, "rotation_y": 2.0, "rotation_z": 0.0},  # Big Y-axis spin
-    {"name": "Backside 180", "rotation_x": 0.0, "rotation_y": -2.0, "rotation_z": 0.0},  # Reverse Y-axis spin
-    {"name": "Impossible", "rotation_x": 3.0, "rotation_y": 1.0, "rotation_z": 1.0},  # Complex X, Y, and Z spin
-    {"name": "Varial Kickflip", "rotation_x": 2.0, "rotation_y": 0.0, "rotation_z": 2.0},  # Kickflip + Shove-it
-    {"name": "Hardflip", "rotation_x": 2.0, "rotation_y": 1.5, "rotation_z": 0.5},  # Kickflip + Frontside 180
-    {"name": "Tre Flip", "rotation_x": 3.0, "rotation_y": 1.0, "rotation_z": 3.0}  # 360 Flip (Kickflip + 360 Shove-it)
-]
+@app.route('/dashboard')
+def dashboard():
+    if "username" not in session:
+        return redirect(url_for("login"))
+    return render_template("index.html", username=session["username"])
 
+@app.route('/logout')
+def logout():
+    session.pop("username", None)
+    return redirect(url_for("login"))
+
+@app.route('/get_timeline')
+def get_timeline():
+    """Fetch the last 10 tricks for the logged-in user."""
+    if "username" not in session:
+        return jsonify([])
+
+    response = requests.get(FIREBASE_DB + TRICK_HISTORY_PATH + "?orderBy=\"$key\"&limitToLast=10")
+    if response.ok:
+        moves = list(response.json().values())
+        return jsonify(moves[::-1])  # Reverse order (newest first)
+    return jsonify([])
 
 def generate_motion():
-    """Generate skateboard trick data every 5 seconds."""
+    """Fetch the latest trick from Firebase and send it to the frontend only when it changes."""
+    last_trick_name = None
+
     while True:
-        eventlet.sleep(5)  # Wait before performing a new trick
+        eventlet.sleep(2)
+        response = requests.get(FIREBASE_DB + TRICK_HISTORY_PATH + "?orderBy=\"$key\"&limitToLast=1")
 
-        trick = random.choice(SKATEBOARD_TRICKS)  # Choose a random trick
+        if response.ok:
+            db_data = response.json()
+            latest_data = list(db_data.values())[-1]
+            # trick_name = latest_data.get("trick name", "").strip()
 
-        skateboard_data = {
-            "trick_name": trick["name"],
-            "rotation_x": trick["rotation_x"],
-            "rotation_y": trick["rotation_y"],
-            "rotation_z": trick["rotation_z"]
-        }
+            # if trick_name and trick_name != last_trick_name:
+            #     gif_filename = VALID_TRICKS.get(trick_name, None)
 
-        print(f"Performing Trick: {trick['name']}")  # Debug log
-        socketio.emit('perform_trick', skateboard_data)  # Send data to frontend
+            #     if gif_filename:
+            #         skateboard_data = {
+            #             "trick_name": trick_name,
+            #             "gif_url": f"/static/gifs/{gif_filename}"
+            #         }
+            #         socketio.emit('perform_trick', skateboard_data)
+            #     last_trick_name = trick_name
+
+            # random trick
+            trick_name = random.choice(list(VALID_TRICKS.keys()))
+            gif_filename = VALID_TRICKS.get(trick_name, None)
+            skateboard_data = {
+                "trick_name": trick_name,
+                "gif_url": f"/static/gifs/{gif_filename}"
+            }
+            socketio.emit('perform_trick', skateboard_data)
+            
 
 @socketio.on('connect')
 def handle_connect():
     print("Client connected")
-    eventlet.spawn(generate_motion)  # Start sending trick data
+    eventlet.spawn(generate_motion)
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)

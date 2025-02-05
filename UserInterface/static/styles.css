@@ -1,27 +1,143 @@
+/* General Page Styling */
 body {
     font-family: Arial, sans-serif;
     text-align: center;
+    background-color: #1e1e1e;
+    color: white;
 }
 
-header {
+/* Navigation Bar */
+nav {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 20px;
     background: #222;
     color: white;
-    padding: 10px;
 }
 
-section {
-    margin: 20px;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    background: #f9f9f9;
+.logout-button {
+    background: red;
+    color: white;
+    padding: 8px 15px;
+    text-decoration: none;
+    border-radius: 5px;
 }
 
-#skateboard-container {
+.logout-button:hover {
+    background: darkred;
+}
+
+/* Dashboard Layout */
+.dashboard-container {
+    display: flex;
+    justify-content: space-between;
+    width: 80%;
+    margin: auto;
+    padding-top: 30px;
+}
+
+/* Trick Display Section */
+.gif-section {
+    flex: 3;
+}
+
+#gif-container {
     width: 100%;
-    height: 400px;
+    max-width: 600px;
+    height: 350px;
     background: #ddd;
+    border-radius: 10px;
+    margin: auto;
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
+}
+
+#trick-gif {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Timer & Calorie Tracker */
+.stats-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.stat-box {
+    width: 90%;
+    height: 120px;
+    background: #2a4d67;
+    color: white;
+    padding: 15px;
+    border-radius: 10px;
+    margin: 10px auto;
+}
+
+.stat-box h3 {
+    margin-bottom: 5px;
+}
+
+/* Timeline Section */
+.timeline-container {
+    text-align: center;
+    padding: 30px 0;
+}
+
+.timeline {
+    display: flex;
+    justify-content: space-around;
+    width: 90%;
+    margin: auto;
+    position: relative;
+    padding: 50px 0; /* Extra padding for better spacing */
+}
+
+.timeline::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 5%;
+    width: 90%;
+    height: 3px;
+    background-color: white;
+    z-index: -1;
+}
+
+.timeline-item {
+    position: relative;
+    width: 12%;
+    text-align: center;
+}
+
+.timeline-item .timestamp {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 50px; /* Increased spacing */
+    display: block;
+}
+
+.timeline-item::before {
+    content: "●";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 15px; /* Larger circle */
+    color: white;
+    background-color: black;
+    padding: 8px;
+    border-radius: 50%;
+    border: 3px solid white;
+}
+
+.timeline-item .trick-name {
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 50px; /* Increased spacing */
+    display: block;
 }
