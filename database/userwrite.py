@@ -51,10 +51,8 @@ def write_and_limit_data(data):
     else:
         print(f"Failed to fetch records: {fetch_response.text}")
 
-
-for n in range(2, 0, -1):
-    username = "admin"
-    password = "admin"
-    data = {"username": username, "password": password}
-    write_and_limit_data(data)
-    time.sleep(1)
+username = "steve"
+password = "nimo"
+data = {"username": username, "password": password}
+write_and_limit_data(data)
+time.sleep(1)
