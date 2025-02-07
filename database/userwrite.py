@@ -1,4 +1,4 @@
-import time,random
+import time,random, requests
 from google.oauth2 import service_account
 from google.auth.transport.requests import AuthorizedSession
 
@@ -18,19 +18,29 @@ credentials = service_account.Credentials.from_service_account_file(keyfile, sco
 
 # Use the credentials object to authenticate a Requests session.
 authed_session = AuthorizedSession(credentials)
+query = "?orderBy=\"$key\"&limitToLast=1000"
 
 N = 1000
 n = 1
-def write_and_limit_data(data):
+def register_user(data):
     path = "userdetails.json"
-
-    print("Writing {} to {}".format(data, path))
-    response = authed_session.post(db+path, json=data)
+    response = requests.get(db + path + query)
 
     if response.ok:
-        print("Created new node named {}".format(response.json()["name"]))
-    else:
-        raise ConnectionError("Could not write to database: {}".format(response.text))
+        users = response.json()
+
+        for key, user in users.items():
+            if user.get("username") == data["username"]:
+                print("❌ Username already exists! Choose a different one.")
+                return False  # Username is already taken
+
+        print("Adding {} to {}".format(data, path))
+        response = authed_session.post(db+path, json=data)
+
+        if response.ok:
+            print("Created new node named {}".format(response.json()["name"]))
+        else:
+            raise ConnectionError("Could not write to database: {}".format(response.text))
 
     fetch_response = authed_session.get(db+path)
 
@@ -54,5 +64,5 @@ def write_and_limit_data(data):
 username = "steve"
 password = "nimo"
 data = {"username": username, "password": password}
-write_and_limit_data(data)
+register_user(data)
 time.sleep(1)

@@ -57,7 +57,7 @@ skateboard_tricks = {
     3: "Shuv It",
     4: "Front Shuv",
     5: "360 Shuv It",
-    6: "360 Shuv",
+    6: "360 Front Shuv",
     7: "Ollie"
 }
 
