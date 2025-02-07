@@ -5,7 +5,7 @@ from google.auth.transport.requests import AuthorizedSession
 db = "https://candjs-bb4db-default-rtdb.europe-west1.firebasedatabase.app/"
 
 # Define the private key file (change to use your private key)
-keyfile = "candjs-bb4db-firebase-adminsdk-fbsvc-110a8751b6.json"
+keyfile = "candjs-bb4db-firebase-adminsdk-fbsvc-a669d958fb.json"
 
 # Define the required scopes
 scopes = [
@@ -61,8 +61,8 @@ def register_user(data):
     else:
         print(f"Failed to fetch records: {fetch_response.text}")
 
-username = "steve"
-password = "nimo"
+username = "hi"
+password = "test"
 data = {"username": username, "password": password}
 register_user(data)
 time.sleep(1)
