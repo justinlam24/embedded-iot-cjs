@@ -3,37 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Skateboard Tracker</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
+    <title>Skateboard Trick Dashboard</title>
+
+    <!-- External Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
+
+    <!-- Link to Static Files -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script src="{{ url_for('static', filename='timeline.js') }}"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <header>
-        <h1>Skateboard Movement Tracker</h1>
-    </header>
-    
-    <section id="skateboard-view">
-        <h2>3D Skateboard Visualization</h2>
-        <h3 id="trick-name">Waiting for Trick...</h3>
-        <div id="skateboard-container"></div>
-    </section>
-    
-    
-    <section id="statistics">
-        <h2>Performance Statistics</h2>
-        <ul id="stats-list">
-            <li>Tricks Performed: <span id="tricks-count">0</span></li>
-            <li>Accuracy: <span id="accuracy">0%</span></li>
-            <li>Session Time: <span id="session-time">0:00</span></li>
-        </ul>
-    </section>
-    
-    <section id="project-info">
-        <h2>Project Overview</h2>
-        <p>This project tracks skateboard movements using a Raspberry Pi and visualizes them in real-time.</p>
-    </section>
-    
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+    <!-- Navbar -->
+    <nav>
+        <h1>Skateboard Trick Dashboard</h1>
+        <a href="{{ url_for('logout') }}" class="logout-button">Logout</a>
+    </nav>
+
+    <div class="dashboard-container">
+        
+        <!-- Trick Display Section -->
+        <div class="gif-section">
+            <h3 id="trick-name">Waiting for Trick...</h3>
+            <div id="gif-container">
+                <img id="trick-gif" src="" alt="Skateboard Trick Animation" style="display: none;">
+            </div>
+        </div>
+
+        <!-- Timer and Calorie Tracker -->
+        <div class="stats-section">
+            <div class="stat-box">
+                <h3>🕒 Session Time</h3>
+                <p id="session-timer">00:00:00</p>
+            </div>
+            <div class="stat-box">
+                <h3>🔥 Calories Burned</h3>
+                <p id="calories-tracker">0 kcal</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Timeline Section -->
+    <div class="timeline-container">
+        <h3>Trick History</h3>
+        <div class="timeline" id="trick-timeline">
+            <!-- Timeline items will be inserted dynamically -->
+        </div>
+    </div>
+
 </body>
 </html>
