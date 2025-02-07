@@ -57,6 +57,7 @@ def read_gyroscope():
 
 CONFIG_REG = 0x01 # Configuration register
 CONVERSION_REG = 0x00 # Conversion register
+CONFIG_SINGLE_A0 = [0xC3, 0x83] 
 
 def configure_adc():
     """ Configure ADS1115 to read A0 (single-ended) """
