@@ -22,7 +22,7 @@ yaw = 0.0
 ema_alpha = 0.6  # Closer to 1 reacts faster; closer to 0 gives smoother output.
 ema_gyro_x = None  # For roll rate (gyro_x)
 ema_gyro_z = None  # For yaw rate (gyro_z)
-
+ema_gyro_y = None  # For pitch rate (gyro_y)
 # -------------------------------------------------
 # Trick Detection Parameters and State Variables
 # -------------------------------------------------
@@ -44,13 +44,13 @@ yaw_stop_count = 0                 # Count consecutive low yaw-rate samples
 yaw_stop_count_threshold = 5       # Number of low-rate samples to mark event end
 yaw_trick_tolerance = 30.0         # Tolerance for detecting 180° or 360° events
 # Pitch trick detection 
-yaw_trick_state = "idle"           # "idle" or "rotating"
-yaw_trick_integrated = 0.0         # Integrated yaw (degrees) during an event
-yaw_trick_start_threshold = 150.0   # Start event if |yaw rate| > this (deg/s)
-yaw_trick_stop_threshold = 20.0    # End event if yaw rate < this (deg/s)
-yaw_stop_count = 0                 # Count consecutive low yaw-rate samples
-yaw_stop_count_threshold = 5       # Number of low-rate samples to mark event end
-y
+pitch_trick_state = "idle"           # "idle" or "rotating"
+pitch_trick_integrated = 0.0         # Integrated pitch (degrees) during an event
+pitch_trick_start_threshold = 150.0   # Start event if |pitch rate| > this (deg/s)
+pitch_trick_stop_threshold = 20.0    # End event if pitch rate < this (deg/s)
+pitch_stop_count = 0                 # Count consecutive low yaw-rate samples
+pitch_stop_count_threshold = 5       # Number of low-rate samples to mark event end
+pitch_trick_tolerance = 10.0         # Tolerance for detecting 180° or 360° events
 # -------------------------------------------------
 # Print control: only output every 0.5 seconds.
 last_print_time = time.monotonic()
@@ -84,6 +84,12 @@ while True:
         ema_gyro_z = gyro_z_deg
     else:
         ema_gyro_z = ema_alpha * gyro_z_deg + (1 - ema_alpha) * ema_gyro_z
+    # --- Apply EMA to gyro_y (pitch rate) ---
+    if ema_gyro_y is None:
+        ema_gyro_y = gyro_y_deg
+    else:
+        ema_gyro_y = ema_alpha * gyro_y_deg + (1 - ema_alpha) * ema_gyro_y
+
 
     # --- Read Accelerometer Data ---
     accel_x, accel_y, accel_z = accel_mag.accelerometer
@@ -161,9 +167,11 @@ while True:
                     print_buffer.append(f"360 Shuv it detected (yaw negative). Integrated yaw: {yaw_trick_integrated:.2f}°")
             else:
                 print_buffer.append(f"Yaw trick ended, rotation: {yaw_trick_integrated:.2f}°")
+            
             yaw_trick_state = "idle"
 
     # --- Print Output Every 0.5 Seconds ---
+
     if (current_time - last_print_time) >= 0.5:
         # Create a combined message with orientation data and any trick messages.
         orientation_msg = f"Orientation -> Roll: {roll:6.2f}°, Pitch: {pitch:6.2f}°, Yaw: {yaw:6.2f}°"
