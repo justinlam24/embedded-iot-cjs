@@ -62,8 +62,8 @@ def register_user(data):
     else:
         print(f"Failed to fetch records: {fetch_response.text}")
 
-username = "steve"
-password = "nimo"
+username = "hi"
+password = "test"
 data = {"username": username, "password": password}
 register_user(data)
 time.sleep(1)
