@@ -5,7 +5,7 @@ from google.auth.transport.requests import AuthorizedSession
 db = "https://candjs-bb4db-default-rtdb.europe-west1.firebasedatabase.app/"
 
 # Define the private key file (change to use your private key)
-keyfile = "candjs-bb4db-firebase-adminsdk-fbsvc-110a8751b6.json"
+keyfile = "database\candjs-bb4db-firebase-adminsdk-fbsvc-6b077d6068.json"
 
 # Define the required scopes
 scopes = [
@@ -61,7 +61,7 @@ skateboard_tricks = {
     7: "Ollie"
 }
 
-for n in range(7, 0, -1):
-    data = {"trick name": skateboard_tricks[n], "max height": random.random(), "max velocity": random.random(), "time": time.time()}
+for n in range(1, 0, -1):
+    data = {"trick name": skateboard_tricks[random.randint(1,7)], "max height": random.random(), "max velocity": random.random(), "time": time.time()}
     write_and_limit_data(data)
     time.sleep(1)

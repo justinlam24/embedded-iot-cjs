@@ -2,20 +2,34 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+
+    <!-- Styles -->
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <div class="login-container">
-        <h2>Login</h2>
+
+    <div class="auth-container">
+        <h2>Welcome Back!</h2>
+        <p class="subtitle">Log in to access your skateboard dashboard.</p>
+
         {% if error %}
             <p class="error">{{ error }}</p>
         {% endif %}
+
         <form method="POST">
-            <input type="text" name="username" placeholder="Username" required>
-            <input type="password" name="password" placeholder="Password" required>
-            <button type="submit">Login</button>
+            <div class="input-group">
+                <input type="text" name="username" placeholder="Username" required>
+            </div>
+            <div class="input-group">
+                <input type="password" name="password" placeholder="Password" required>
+            </div>
+            <button type="submit" class="auth-button">Login</button>
         </form>
+
+        <p class="switch-text">Don't have an account? <a href="{{ url_for('register') }}">Register here</a></p>
     </div>
+
 </body>
 </html>
