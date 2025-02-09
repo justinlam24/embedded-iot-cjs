@@ -1,26 +1,48 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // Mock trick history (random timestamps)
-    const tricks = [
-        { name: "Kickflip", timestamp: "12:30 PM" },
-        { name: "Heelflip", timestamp: "12:35 PM" },
-        { name: "Shuv it", timestamp: "12:40 PM" },
-        { name: "Front shuv", timestamp: "12:45 PM" },
-        { name: "360 shuv it", timestamp: "12:50 PM" },
-        { name: "360 shuv", timestamp: "12:55 PM" },
-        { name: "Ollie", timestamp: "1:00 PM" }
-    ];
+    let trickQueue = [];
+    const maxTricks = 10;
+    const tableBody = document.querySelector("#trick-history-table tbody");
 
-    const timeline = document.getElementById("trick-timeline");
+    function formatTime() {
+        let now = new Date();
+        let hours = now.getHours() % 12 || 12;
+        let minutes = now.getMinutes();
+        let ampm = now.getHours() >= 12 ? "PM" : "AM";
+        return `${hours}:${minutes < 10 ? "0" : ""}${minutes} ${ampm}`;
+    }
 
-    tricks.forEach(trick => {
-        const item = document.createElement("div");
-        item.classList.add("timeline-item");
+    function addToTable(trickName) {
+        let timestamp = formatTime();
+        if (trickName == "Waiting for Trick...") {
+            return;
+        }
 
-        item.innerHTML = `
-            <div class="timestamp">${trick.timestamp}</div>
-            <div class="trick-name">${trick.name}</div>
+        // Prevent adding duplicate tricks in a row
+        if (trickQueue.length > 0 && trickQueue[trickQueue.length - 1].trick === trickName) {
+            return;
+        }
+
+        // Remove the oldest trick if we reach the limit
+        if (trickQueue.length >= maxTricks) {
+            trickQueue.shift();
+            tableBody.deleteRow(0); // Remove first row from table
+        }
+
+        // Add new trick to queue
+        trickQueue.push({ trick: trickName, time: timestamp });
+
+        // Create a new table row
+        let row = document.createElement("tr");
+        row.className = "trick-row";
+        row.innerHTML = `
+            <td>${trickName}</td>
+            <td>${timestamp}</td>
         `;
 
-        timeline.appendChild(item);
-    });
+        // Append the row
+        tableBody.appendChild(row);
+    }
+
+    // Expose function globally for tracker.js
+    window.addToTable = addToTable;
 });

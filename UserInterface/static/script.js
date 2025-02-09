@@ -8,16 +8,9 @@ socket.on('perform_trick', function (data) {
     // Update trick name
     document.getElementById('trick-name').innerText = `Performing: ${data.trick_name}`;
 
-    // Update and show GIF
+    // Update GIF properly
     const gifElement = document.getElementById('trick-gif');
     gifElement.src = data.gif_url;
-    gifElement.style.display = "block";
-
-    // Restart GIF animation
-    gifElement.onload = function () {
-        gifElement.style.display = "none";
-        void gifElement.offsetWidth;  // Force reflow
-        gifElement.style.display = "block";
-    };
 });
+
 

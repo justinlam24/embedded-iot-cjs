@@ -5,7 +5,8 @@ from google.auth.transport.requests import AuthorizedSession
 db = "https://candjs-bb4db-default-rtdb.europe-west1.firebasedatabase.app/"
 
 # Define the private key file (change to use your private key)
-keyfile = "candjs-bb4db-firebase-adminsdk-fbsvc-a669d958fb.json"
+keyfile = "database\candjs-bb4db-firebase-adminsdk-fbsvc-6b077d6068.json"
+
 
 # Define the required scopes
 scopes = [
