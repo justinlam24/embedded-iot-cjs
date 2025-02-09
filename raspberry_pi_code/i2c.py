@@ -24,10 +24,31 @@ class Sensor:
             print("I2C write successful!")
         except OSError as e:
             print(f"I2C write failed: {e}")
-
     def accelerometer(self):
         """ Read 6 bytes of acceleration data from FXOS8700 """
-        accel_data = self.bus.read_i2c_block_data(FXOS8700_ADDR, 0x01, 6)
+        accel_data = self.bus.read_i2c_block_data(self.FXOS8700_ADDR, 0x01, 6)
+
+        # Function to properly convert to signed 14-bit integer
+        def to_signed_14bit(val):
+            val = val >> 2  # Remove the lower 2 bits (sensor data is 14-bit)
+            return val - 16384 if val > 8191 else val  # Convert to signed
+
+        # Convert raw data to signed 14-bit values
+        x = to_signed_14bit((accel_data[0] << 8) | accel_data[1])
+        y = to_signed_14bit((accel_data[2] << 8) | accel_data[3])
+        z = to_signed_14bit((accel_data[4] << 8) | accel_data[5])
+
+        # Convert to G-force (assuming ±2g range, 8192 counts per g)
+        g = 9.80665
+        x_g = x * g / 4096.0
+        y_g = y * g / 4096.0
+        z_g = z * g / 4096.0
+
+        return x_g, y_g, z_g
+
+    def accelerometer_d(self):
+        """ Read 6 bytes of acceleration data from FXOS8700 """
+        accel_data = self.bus.read_i2c_block_data(self.FXOS8700_ADDR, 0x01, 6)
 
         # Convert raw data to signed 14-bit values, since I2C transfers data in 8-bit bytes
         x = (accel_data[0] << 8 | accel_data[1]) >> 2
@@ -47,7 +68,7 @@ class Sensor:
         self.bus.write_byte_data(self.FXAS21002_ADDR, 0x13, 0x00)  # CTRL_REG1: Standby mode
         self.bus.write_byte_data(self.FXAS21002_ADDR, 0x13, 0x0E)  # CTRL_REG1: Active mode, 100 Hz output rate
 
-    def gyroscope(self):
+    def gyroscope_d(self):
         """ Read 6 bytes of gyroscope data from FXAS21002 """
         gyro_data = self.bus.read_i2c_block_data(self.FXAS21002_ADDR, 0x01, 6)
 
@@ -55,6 +76,24 @@ class Sensor:
         x = (gyro_data[0] << 8 | gyro_data[1])
         y = (gyro_data[2] << 8 | gyro_data[3])
         z = (gyro_data[4] << 8 | gyro_data[5])
+
+        # Convert to degrees per second (assuming ±250 dps range, 32768 counts per full scale)
+        x_dps = x * (250.0 / 32768.0)
+        y_dps = y * (250.0 / 32768.0)
+        z_dps = z * (250.0 / 32768.0)
+
+        return x_dps, y_dps, z_dps
+    def gyroscope(self):
+        """ Read 6 bytes of gyroscope data from FXAS21002 """
+        gyro_data = self.bus.read_i2c_block_data(self.FXAS21002_ADDR, 0x01, 6)
+
+        # Convert raw data to signed 16-bit values
+        def to_signed_16bit(val):
+            return val - 65536 if val > 32767 else val
+
+        x = to_signed_16bit((gyro_data[0] << 8) | gyro_data[1])
+        y = to_signed_16bit((gyro_data[2] << 8) | gyro_data[3])
+        z = to_signed_16bit((gyro_data[4] << 8) | gyro_data[5])
 
         # Convert to degrees per second (assuming ±250 dps range, 32768 counts per full scale)
         x_dps = x * (250.0 / 32768.0)

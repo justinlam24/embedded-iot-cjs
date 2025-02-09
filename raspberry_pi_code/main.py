@@ -38,7 +38,7 @@ roll_trick_stop_threshold = 20.0   # Consider event ending if roll rate < this (
 roll_stop_count = 0                # Count consecutive low-rate samples
 roll_stop_count_threshold = 5      # Number of low-rate samples to mark event end
 roll_trick_tolerance = 90.0        # Acceptable tolerance for a 360° event
-prev_gyro_x_deg = None
+prev_gyro_x = None
 # Yaw trick detection (Shuv it variants)
 yaw_trick_state = "idle"           # "idle" or "rotating"
 yaw_trick_integrated = 0.0         # Integrated yaw (degrees) during an event
@@ -72,23 +72,23 @@ while True:
     # Gyroscope outputs angular velocity in radians per second.
     gyro_x, gyro_y, gyro_z = sensor.gyroscope()
     # Convert to degrees per second.
-    gyro_x_deg = math.degrees(gyro_x)
-    gyro_y_deg = math.degrees(gyro_y)
-    gyro_z_deg = math.degrees(gyro_z)
+    #gyro_x = math.degrees(gyro_x)
+    #gyro_y = math.degrees(gyro_y)
+    #gyro_z = math.degrees(gyro_z)
     
-    if prev_gyro_x_deg is None:
-        prev_gyro_x_deg = gyro_x_deg
+    if prev_gyro_x is None:
+        prev_gyro_x = gyro_x
     # --- Apply EMA to gyro_x (roll rate) ---
     if ema_gyro_x is None:
-        ema_gyro_x = gyro_x_deg
+        ema_gyro_x = gyro_x
     else:
-        ema_gyro_x = ema_alpha * gyro_x_deg + (1 - ema_alpha) * ema_gyro_x
+        ema_gyro_x = ema_alpha * gyro_x + (1 - ema_alpha) * ema_gyro_x
 
     # --- Apply EMA to gyro_z (yaw rate) ---
     if ema_gyro_z is None:
-        ema_gyro_z = gyro_z_deg
+        ema_gyro_z = gyro_z
     else:
-        ema_gyro_z = ema_alpha * gyro_z_deg + (1 - ema_alpha) * ema_gyro_z
+        ema_gyro_z = ema_alpha * gyro_z + (1 - ema_alpha) * ema_gyro_z
 
     # --- Read Accelerometer Data ---
     accel_x, accel_y, accel_z = accel_mag.accelerometer
@@ -97,9 +97,9 @@ while True:
     pitch_acc = math.degrees(math.atan2(-accel_x, math.sqrt(accel_y**2 + accel_z**2)))
 
     # --- Complementary Filter for Orientation ---
-    roll_gyro = roll + gyro_x_deg * dt
-    pitch_gyro = pitch + gyro_y_deg * dt
-    yaw += gyro_z_deg * dt  # Yaw is tracked solely by integration.
+    roll_gyro = roll + gyro_x * dt
+    pitch_gyro = pitch + gyro_y * dt
+    yaw += gyro_z * dt  # Yaw is tracked solely by integration.
 
     roll = alpha_filter * roll_gyro + (1 - alpha_filter) * roll_acc
     pitch = alpha_filter * pitch_gyro + (1 - alpha_filter) * pitch_acc
@@ -114,8 +114,8 @@ while True:
             print_buffer.append("Roll trick event started!")
     elif roll_trick_state == "rotating":
         # Integrate the raw gyro roll rate.
-        roll_trick_integrated += ((gyro_x_deg + prev_gyro_x_deg) / 2) * dt
-        prev_gyro_x_deg = gyro_x_deg
+        roll_trick_integrated += ((gyro_x + prev_gyro_x) / 2) * dt
+        prev_gyro_x = gyro_x
         # Check if the smoothed roll rate is low.
         if abs(ema_gyro_x) < roll_trick_stop_threshold:
             roll_stop_count += 1
@@ -146,7 +146,7 @@ while True:
             print_buffer.append("Yaw trick event started!\n")
     elif yaw_trick_state == "rotating":
         # Integrate the yaw rate.
-        yaw_trick_integrated += gyro_z_deg * dt
+        yaw_trick_integrated += gyro_z * dt
 
         if abs(ema_gyro_z) < yaw_trick_stop_threshold:
             yaw_stop_count += 1
@@ -189,7 +189,7 @@ while True:
         if len(comms_buffer) > 0:
 
             first_packet = comms_buffer[0]
-            comms.write_and_limit_data({"trick name": first_packet[0], "max height": first_packet[1], "max velocity": first_packet[2], "time": first_packet[3]}) 
+            #comms.write_and_limit_data({"trick name": first_packet[0], "max height": first_packet[1], "max velocity": first_packet[2], "time": first_packet[3]}) 
         print(combined_msg)
         print_buffer = []  # Clear the buffer.
         comms_buffer = []
