@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkateTrack - Motion Tracking for Skateboarding</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script defer src="{{ url_for('static', filename='script.js') }}"></script>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav>
+        <ul>
+            <li><a href="#about">About</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#demo">Demo</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero">
+        <h1>SkateTrack</h1>
+        <p>Track, Visualize, and Improve Your Skateboarding Skills</p>
+        <a href="#about" class="btn">Learn More</a>
+    </header>
+
+    <!-- About Section -->
+    <section id="about" class="section">
+        <h2>About SkateTrack</h2>
+        <p>SkateTrack is an advanced skateboard motion tracking system that detects and visualizes your tricks in real-time using a Raspberry Pi with an accelerometer. The system helps skaters analyze their movements and improve performance.</p>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="section">
+        <h2>Key Features</h2>
+        <div class="features-container">
+            <div class="feature">
+                <h3>Real-Time Motion Tracking</h3>
+                <p>Utilizes a Raspberry Pi with an accelerometer to capture skateboard movements accurately.</p>
+            </div>
+            <div class="feature">
+                <h3>3D Trick Visualization</h3>
+                <p>Shows a real-time 3D rendering of your skateboard tricks.</p>
+            </div>
+            <div class="feature">
+                <h3>Performance Statistics</h3>
+                <p>Tracks your tricks, speed, and accuracy to help you improve over time.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section id="demo" class="section">
+        <h2>Live Demo</h2>
+        <p>Check out our UI in action below!</p>
+        <div class="demo-content">
+            <img src="{{ url_for('static', filename='images/ui_demo.gif') }}" alt="UI Demo GIF">
+            <video controls>
+                <source src="{{ url_for('static', filename='images/full_demo.mp4') }}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="section">
+        <h2>Contact Us</h2>
+        <p>Want to learn more? Reach out to us for collaboration or questions.</p>
+        <a href="mailto:info@skatetrack.com" class="btn">Email Us</a>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 SkateTrack. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>
